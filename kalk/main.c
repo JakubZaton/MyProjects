@@ -1,0 +1,119 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<math.h>
+//definicja typu
+typedef struct elem{
+  int dana;
+  struct elem *nast;
+}t_elem,*t_stos;
+
+//funkcja inicjująca
+void inicjuj(t_stos *S){
+  *S=NULL;
+}
+
+//dodatkowo funkcja tworząca element listy
+int tworz(t_elem **elem, int dana){
+  *elem=(t_elem*)malloc(sizeof(t_elem));
+  if(!(*elem))return 1;
+  (*elem)->dana=dana;
+  (*elem)->nast=NULL;
+  return 0;
+}
+
+//funkcja wrzucająca na stos
+//zwraca 0 kiedy uda się położyć daną na stos - 1 w przeciwnym przypadku
+int push(t_stos *S, int dana){
+  t_elem *tmp;
+  if(tworz(&tmp,dana))return 1;
+  tmp->nast=*S;
+  *S=tmp;
+  return 0;
+}
+
+//funkcja usuwająca ze stosu
+//dodatkowo zwraca 1 jeżeli stos jest PUSTY lub 0 jeśli wykona się poprawnie 
+int pop(t_stos *S, int *dana){
+  t_elem *tmp;
+  if(!(*S))return 1;
+  *dana = (*S)->dana;
+  tmp=*S;
+  *S=(*S)->nast;
+  free(tmp);
+  return 0;
+}
+
+//funkcja drukująca zawartość stosu
+//dla X==1 tylko wierzchołek
+//dla X==0 cały stos
+//dodatkowo zwraca 1 jeśli stos jest pusty i 0 jeśli wykona się poprawnie
+int druk(t_stos S,int X){
+  if(S==NULL)return 1;
+  while(S){
+    printf("### %d\n",S->dana);
+    S=S->nast;
+    if(X)break;
+  }
+  return 0;
+}
+
+
+
+
+
+int main(){
+  char odp[10]; //tablica wczytywan
+  int w=0; //zmienna pomocnicza z wynikiem
+  int dana=0;  
+int wynik=0; 
+int dane[2]; 
+  t_stos S;
+  inicjuj(&S)  ;
+
+  do
+    {scanf("%s",odp);
+      if(odp[0]=='+'||odp[0]=='-'||odp[0]=='*'||odp[0]=='/'||odp[0]=='r') //sprawdzamy co sie dzieje gdy wybieramy opcje arytmetyczne 
+	for(int i=0;i<2;i++){
+	  if(pop(&S,&dane[i]))
+	    {
+	      if(i==0)printf("Brak danych na stosie"); //dziwne ilosci danych na stosie
+	      if(i==1){
+		printf("Na stosie jedna dana");
+		push(&S,dane[0]);
+	      }	    
+	      break;
+}	
+	  if(i==1 && odp[0]!='r'){  //sprawdzamy dane
+	    if(odp[0]=='+')
+	      wynik=dane[0]+dane[1];
+	    if(odp[0]=='-')
+	      wynik=dane[0]-dane[1];
+	    if(odp[0]=='*')
+	      wynik=dane[0]*dane[1];
+	    if(odp[0]=='/')
+	      wynik=dane[0]/dane[1];
+	    push(&S,wynik);
+	  }else if(i==1){
+	    int i;
+	    for( i=0;i<2;i++)
+	      push(&S,dane[i]);
+	  }
+}
+      if(isdigit(odp[0])>0){    //sprawdzamy co sie dzieje w konkretnych warunkach
+	w=odp[0]-'0';
+	 push(&S,w);
+      }else if(isdigit(odp[0])==0 &&  isdigit(odp[1])>1){
+	w=-odp[1]-'0';
+        push(&S,-w);
+      }
+      if(odp[0]=='f'){
+	druk(S,0);
+}
+      if(odp[0]=='p'){
+	druk(S,1);
+}
+
+    }while(odp[0]!='q');
+
+}
